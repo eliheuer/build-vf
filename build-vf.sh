@@ -1,9 +1,9 @@
 echo "\n*** STARTING BUILD VF ***********************"
 
 # Set variables
-GITROOTDIR=~/Type/Dosis
-FONTSOURCE=Dosis.glyphs
-FONTFILE=Dosis-vf.ttf
+GITROOTDIR=~/Type/YOUR_FONT_HERE
+FONTSOURCE=YOUR_FONT_HERE.glyphs
+FONTFILE=YOUR_FONT_HERE-vf.ttf
 
 echo " "
 cd $GITROOTDIR
