@@ -7,6 +7,6 @@ A shell script for automating the process of preparing variable fonts for releas
 Edit the variables at the top of the script then run: 
 
 ```
-./build-vf
+./build-vf.sh
 
 ```
