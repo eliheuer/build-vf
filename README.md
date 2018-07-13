@@ -1,2 +1,12 @@
-# elis-bash-type-scripts
-elis-bash-type-scripts
+# BUILD VF
+
+A shell script for automating the process of preparing variable fonts for release.
+
+# Usage Instructions
+
+Edit the variables at the top of the script the run: 
+
+```
+./build-vf
+
+```
