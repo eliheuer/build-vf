@@ -4,7 +4,7 @@ A shell script for automating the process of preparing variable fonts for releas
 
 # Usage Instructions
 
-Edit the variables at the top of the script the run: 
+Edit the variables at the top of the script then run: 
 
 ```
 ./build-vf
