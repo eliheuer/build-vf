@@ -1,79 +1,181 @@
-echo "\n*** STARTING BUILD VF ***********************"
+#!/bin/bash
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+###############################################################
+#
+# This script makes a variable font from a glyphs source file.
+# 
+# It aplies the following fixes and tests:
+#
+#    * Checks if dependencies are installed 
+#    * Runs Fontmake
+#
+# Sample usage:
+#   ./build-vf.sh
 
-# Set variables
-GITROOTDIR=~/Type/Dosis
-FONTSOURCE=Dosis.glyphs
-FONTFILE=Dosis-vf.ttf
+# Terminal delay for improved readability, 
+# set to 0.0 if not needed
+SLEEPTIME=0.25
 
-echo " "
-cd $GITROOTDIR
-echo Moving into:
-pwd
+# Start TUI
+clear
+echo "
+###############################################################
+#                                                             #
+#  #    # #####                    #####    ################  #
+#  #    # #                        #   #    #   ##         #  #
+#   #  #  ####                      #   #  #   # #   #######  #
+#   #  #  #     --------------->    #   #  #  #  #      #     #
+#    ##   #                          #   ##   #  #   ####     #
+#    ##   #                          #########   #####        #
+#                                                             #
+#  Build Variable Font Script v1.0                            #
+#                                                             #
+#  Licensed under the Apache License, Version 2.0             #
+#  https://github.com/eliheuer/build-vf                       #
+#                                                             #
+###############################################################"
+sleep 1
 
-# Checks
-echo "\n*** Checking if gftools is installed ********"
+# Check if gftools is installed 
+echo "
+*** Checking if gftools is installed **************************"
+sleep $SLEEPTIME
 if command -v gftools >/dev/null; then
-    echo '    gftools is installed! :-)'
+    echo '[+] GFtools is installed! :-)'
 else
-    echo '    gftools absent :-('
+    echo '[?] GFtools absent :-('
+    echo '[:] Get it here: https://github.com/googlefonts/fontbakery'
+    echo '[:] Or run: pip install fontbakery'
 fi
+echo '[:] Done'
+sleep $SLEEPTIME
 
-echo "\n*** Checking if fontmake is installed *******"
+echo "
+*** Checking if fontmake is installed *************************"
+sleep $SLEEPTIME
 if command -v fontmake >/dev/null; then
-    echo '    fontmake is installed! :-)'
+    echo '[+] Fontmake is installed! :-)'
 else
-    echo '    fontmake absent :-('
+    echo '[?] Fontmake is not installed... :-('
+    echo '[:] Get it here: https://github.com/googlefonts/fontbakery'
+    echo '[:] Or run: pip install fontbakery'
 fi
+echo '[:] Done'
+sleep $SLEEPTIME
 
-echo "\n*** Checking if fontbakery is installed *******"
+echo '
+*** Checking if fontbakery is installed ***********************'
+sleep $SLEEPTIME
 if command -v fontbakery >/dev/null; then
-    echo '    fontbakery is installed! :-)'
+    echo '[+] Fontbakery is installed! :-)'
 else
-    echo '    fontbakery absent :-('
-    echo '    Get it here: '
-    echo '    or run: pip install fontbakery'
+    echo '[?] Fontbakery is not installed... :-('
+    echo '[:] Get it here: https://github.com/googlefonts/fontbakery'
+    echo '[:] Or run: pip install fontbakery'
 fi
+echo '[:] Done'
+sleep $SLEEPTIME
+
+# Get filename and set CONSTANTS
+echo "
+*** Getting Name from .glyphs source **************************"
+sleep $SLEEPTIME
+for i in *.glyphs; do
+    echo "[+] \c"
+    echo $i
+    n=${i%.*}                   # remove the extension `.glyphs`
+    echo "[+] filename set:\c"
+    echo " $n"
+    done
+sleep $SLEEPTIME
+
+GITROOTDIR=~/Type/$n
+FONTSOURCE=$n.glyphs
+FONTFILE=$n-VF.ttf
+
+echo '[:] Done'
+
+# Move to the git repo root directory
+echo "
+*** Moving to the git repo root directory *********************"
+cd ..
+echo "[+] \c"
+pwd
+echo '[:] Done'
+
+# Remove old build directories
+echo "
+*** Removing old build directories ****************************"
+rm -rf variable_ttf master_ufo &&
+sleep $SLEEPTIME
+echo '[:] Done'
 
 # Build with fontmake
-echo "\n*** building with fontmake ******************"
-fontmake -g source/$FONTSOURCE -o variable &&
-echo "\n*** Done :-) ********************************"
+echo "
+*** Building with fontmake ************************************"
+sleep $SLEEPTIME
+fontmake -g source/$FONTSOURCE -o variable --verbose DEBUG &&
+sleep $SLEEPTIME
+echo '[:] Done'
 
 # Fix no Hinting
-echo "\n*** start gftools-fix-nonhinting.py *********"
+echo "
+*** Start gftools-fix-nonhinting.py ***************************"
 gftools fix-nonhinting \
     variable_ttf/$FONTFILE \
     variable_ttf/$FONTFILE.fix &&
 rm -rf variable_ttf/$FONTFILE
 mv variable_ttf/$FONTFILE.fix variable_ttf/$FONTFILE
-echo "\n*** Done :-) ********************************"
+echo '[+] Done'
 
 # Run autohint
-echo "\n*** start ttfautohint ***********************"
-ttfautohint \
-    variable_ttf/$FONTFILE \
-    variable_ttf/$FONTFILE.fix &&
-rm -rf variable_ttf/$FONTFILE
-mv variable_ttf/$FONTFILE.fix variable_ttf/$FONTFILE
-echo "\n*** Done :-) ********************************"
+echo "
+*** Start ttfautohint *****************************************"
+# ttfautohint \
+#     variable_ttf/$FONTFILE \
+#     variable_ttf/$FONTFILE.fix --verbose &&
+# rm -rf variable_ttf/$FONTFILE
+# mv variable_ttf/$FONTFILE.fix variable_ttf/$FONTFILE
+# echo "\n*** Done :-) ********************************"
 
 # Fix no dsgi
-echo "\n*** start gftools-fix-dsig.py ***************"
-gftools fix-dsig \
-    variable_ttf/$FONTFILE --autofix
-echo "\n*** Done :-) ********************************"
+# echo "\n*** start gftools-fix-dsig.py ***************"
+# gftools fix-dsig \
+#     variable_ttf/$FONTFILE --autofix
+# echo "\n*** Done :-) ********************************"
 
-echo "\n*** Moving Font file to fonts/ **************"
-rm -rf fonts/$FONTFILE
-cp variable_ttf/$FONTFILE fonts/$FONTFILE
+# echo "\n*** Moving Font file to fonts/ **************"
+# rm -rf fonts/$FONTFILE
+# cp variable_ttf/$FONTFILE fonts/$FONTFILE
 
-echo "\n*** delete temp dirs **************"
-rm -rf master_ufo/ variable_ttf/
+# echo "\n*** delete temp dirs **************"
+# rm -rf master_ufo/ variable_ttf/
+
+# Switch to python 3
+# deactivate
+# v-tt
 
 # Run fontbakery
-echo "\n*** start fontbakery *********"
-fontbakery check-googlefonts fonts/$FONTFILE
-echo "\n*** Done :-) ********************************"
+# echo "\n*** start fontbakery *********"
+# fontbakery check-googlefonts fonts/$FONTFILE
 
+# Switch to python2
+# deactivate 
+# v-tt2
 
-
+# Done :-)
+echo '
+*** Done ******************************************************
+[+] Variable font output avaiable in the fonts directory.'
