@@ -4,9 +4,8 @@ A shell script for automating the process of preparing variable fonts for releas
 
 # Usage Instructions
 
-Edit the variables at the top of the script the run: 
-
+Move this script to the `source` directory of a font repo, and from the command line run:
 ```
-./build-vf
+source build-vf.sh
 
 ```

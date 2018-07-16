@@ -36,9 +36,9 @@ echo "
 #  #    # #####                    #####    ################  #
 #  #    # #                        #   #    #   ##         #  #
 #   #  #  ####                      #   #  #   # #   #######  #
-#   #  #  #     --------------->    #   #  #  #  #      #     #
-#    ##   #                          #   ##   #  #   ####     #
-#    ##   #                          #########   #####        #
+#   #  #  #     <---------------->  #    ##    # #      #     #
+#    ##   #                          #        #  #   ####     #
+#    ##   #                          ##########  #####        #
 #                                                             #
 #  Build Variable Font Script v1.0                            #
 #                                                             #
@@ -55,9 +55,9 @@ sleep $SLEEPTIME
 if command -v gftools >/dev/null; then
     echo '[+] GFtools is installed! :-)'
 else
-    echo '[?] GFtools absent :-('
-    echo '[:] Get it here: https://github.com/googlefonts/fontbakery'
-    echo '[:] Or run: pip install fontbakery'
+    echo '[?] GFtools is not installed :-('
+    echo '[:] Get it here: https://github.com/googlefonts/gftools'
+    echo '[:] Or run: pip install gftools'
 fi
 echo '[:] Done'
 sleep $SLEEPTIME
@@ -69,8 +69,8 @@ if command -v fontmake >/dev/null; then
     echo '[+] Fontmake is installed! :-)'
 else
     echo '[?] Fontmake is not installed... :-('
-    echo '[:] Get it here: https://github.com/googlefonts/fontbakery'
-    echo '[:] Or run: pip install fontbakery'
+    echo '[:] Get it here: https://github.com/googlei18n/fontmake'
+    echo '[:] Or run: pip install fontmake'
 fi
 echo '[:] Done'
 sleep $SLEEPTIME
@@ -96,15 +96,16 @@ for i in *.glyphs; do
     echo "[+] \c"
     echo $i
     n=${i%.*}                   # remove the extension `.glyphs`
-    echo "[+] filename set:\c"
+    echo "[+] Filename set:\c"
     echo " $n"
     done
 sleep $SLEEPTIME
-
-GITROOTDIR=~/Type/$n
 FONTSOURCE=$n.glyphs
+echo "[+] FONTSOURCE = \c"
+echo $FONTSOURCE
 FONTFILE=$n-VF.ttf
-
+echo "[+] FONTFILE = \c"
+echo $FONTFILE
 echo '[:] Done'
 
 # Move to the git repo root directory
@@ -136,32 +137,48 @@ echo "
 gftools fix-nonhinting \
     variable_ttf/$FONTFILE \
     variable_ttf/$FONTFILE.fix &&
-rm -rf variable_ttf/$FONTFILE
+echo '[+] Done'
+echo '[:] Removing input file'
+rm -rf variable_ttf/$FONTFILE &&
+echo '[+] Done'
+echo "[:] Renaming output file to \c"
+echo $FONTFILE
 mv variable_ttf/$FONTFILE.fix variable_ttf/$FONTFILE
 echo '[+] Done'
 
 # Run autohint
 echo "
 *** Start ttfautohint *****************************************"
-# ttfautohint \
-#     variable_ttf/$FONTFILE \
-#     variable_ttf/$FONTFILE.fix --verbose &&
-# rm -rf variable_ttf/$FONTFILE
-# mv variable_ttf/$FONTFILE.fix variable_ttf/$FONTFILE
-# echo "\n*** Done :-) ********************************"
+ttfautohint \
+    variable_ttf/$FONTFILE \
+    variable_ttf/$FONTFILE.fix --verbose &&
+rm -rf variable_ttf/$FONTFILE
+echo '[+] Done'
+echo "[:] Remove input file"
+mv variable_ttf/$FONTFILE.fix variable_ttf/$FONTFILE &&
+echo '[+] Done'
+echo "[:] Renaming output file to \c"
+echo $FONTFILE
+echo '[+] Done'
 
 # Fix no dsgi
-# echo "\n*** start gftools-fix-dsig.py ***************"
-# gftools fix-dsig \
-#     variable_ttf/$FONTFILE --autofix
-# echo "\n*** Done :-) ********************************"
+echo "
+*** Start gftools-fix-dsig.py *********************************"
+gftools fix-dsig \
+    variable_ttf/$FONTFILE --autofix &&
+echo "[+] Done"
 
-# echo "\n*** Moving Font file to fonts/ **************"
-# rm -rf fonts/$FONTFILE
-# cp variable_ttf/$FONTFILE fonts/$FONTFILE
+echo "
+*** Moving font file to $n/fonts/$FONTFILE ********************"
+rm -rf fonts/$FONTFILE
+cp variable_ttf/$FONTFILE fonts/$FONTFILE
 
-# echo "\n*** delete temp dirs **************"
-# rm -rf master_ufo/ variable_ttf/
+echo "
+*** Delete temporary directories **************"
+rm -rf master_ufo/ variable_ttf/
+echo "[+] Removed master_ufo/"
+echo "[+] Removed variable_ttf/"
+echo "[+] Done"
 
 # Switch to python 3
 # deactivate
@@ -176,6 +193,7 @@ echo "
 # v-tt2
 
 # Done :-)
+#cd source
 echo '
-*** Done ******************************************************
-[+] Variable font output avaiable in the fonts directory.'
+*** Done ******************************************************'
+echo "[+] Variable font output avaiable in the fonts directory."
