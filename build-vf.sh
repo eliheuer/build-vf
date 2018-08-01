@@ -101,6 +101,7 @@ for i in *.glyphs; do
     done
 sleep $SLEEPTIME
 FONTSOURCE=$n.glyphs
+SOURCEFOLDER="$(pwd)"
 echo "[+] FONTSOURCE = \c"
 echo $FONTSOURCE
 FONTFILE=$n-VF.ttf
@@ -127,7 +128,7 @@ echo '[:] Done'
 echo "
 *** Building with fontmake ************************************"
 sleep $SLEEPTIME
-fontmake -g source/$FONTSOURCE -o variable --verbose DEBUG &&
+fontmake -g $SOURCEFOLDER/$FONTSOURCE -o variable --verbose DEBUG &&
 sleep $SLEEPTIME
 echo '[:] Done'
 
